@@ -1,5 +1,6 @@
 package com.rent.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.rent.utils.AssembleResponseMsg;
 import com.rent.po.ResponseBody;
 import com.rent.service.IUserService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,25 +34,21 @@ public class UserController {
          Map<String, Object> resultMap = userService.queryUserList(map);
          return new AssembleResponseMsg().success(resultMap);
      }
-     @RequestMapping(value = "/login")
-     public ResponseBody Login(@RequestParam(value = "userName", required = false) String userName,
-                                   @RequestParam(value = "password", required = false) String password,
-                                   @RequestParam(value = "checkCode", required = false) String code,
-                                   HttpServletRequest request
-     ){
+     @RequestMapping(value = "/login",produces = "application/json;charset=utf-8")
+     public ResponseBody Login(@RequestBody Map<String,Object> map,
+                               HttpServletRequest request)
+     {
+         HttpSession session = request.getSession();
+         String  checkCode = map.get("checkCode").toString();
+         //System.out.println(session.getAttribute( RandomValidateCode.RANDOMCODEKEY));
+         if(!session.getAttribute(RandomValidateCode.RANDOMCODEKEY).equals(checkCode)) {
+             return new AssembleResponseMsg().failure(200,"error","验证码错误");
+         }
 
-//         HttpSession session = request.getSession();
-//         System.out.println(code);
-//         //System.out.println(session.getAttribute( RandomValidateCode.RANDOMCODEKEY));
-//         if(session.getAttribute( RandomValidateCode.RANDOMCODEKEY).equals(code)) {
-////System.out.println("code 有问题");
-//             return new AssembleResponseMsg().failure(200,"error","验证码错误");
-//         }
-         System.out.println(userName);
-         System.out.println(password);
-         Map<String,Object> map = new HashMap<String,Object>();
-         map.put("userName",userName);
-         map.put("password",password);
+         System.out.println(map);
+//         Map<String,Object> map = new HashMap<String,Object>();
+//         map.put("userName",userName);
+//         map.put("password",password);
          int flag = userService.queryUser(map);
          if (flag==1){
              System.out.println("OK");
