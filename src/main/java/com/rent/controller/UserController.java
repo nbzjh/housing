@@ -51,9 +51,10 @@ public class UserController {
 //         map.put("password",password);
          int flag = userService.queryUser(map);
          if (flag==1){
-             System.out.println("OK");
+             System.out.println(new AssembleResponseMsg().success("OK"));
              return new AssembleResponseMsg().success("OK");
          } {
+             System.out.println(new AssembleResponseMsg().failure(200,"error","用户名或密码错误"));
              return new AssembleResponseMsg().failure(200,"error","用户名或密码错误");
         }
      }
